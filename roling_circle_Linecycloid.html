@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rolling Circle with Cycloid Path</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="1600" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        const radius = 80; // Radius of the circle
+        const pathLength = canvas.width; // Length of the straight path
+        const pathY = canvas.height - radius; // Y-coordinate of the path (at the bottom, touching the circle)
+        let circleX = radius; // Initial X-coordinate of the circle (starting fully inside the canvas)
+        const speed = 2; // Speed of the rolling circle
+        const pathPoints = []; // Array to store path points
+        let angle = Math.PI / 2; // Initial angle to position the point at the bottom of the circle
+
+        function drawCircle(x, y, r) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.strokeStyle = 'black'; // Circle color
+            ctx.stroke();
+        }
+
+        function drawPath() {
+            ctx.beginPath();
+            ctx.moveTo(0, pathY);
+            ctx.lineTo(pathLength, pathY);
+            ctx.strokeStyle = 'black'; // Path color
+            ctx.stroke();
+        }
+
+        function drawTrace() {
+            ctx.beginPath();
+            for (let i = 0; i < pathPoints.length; i++) {
+                if (i === 0) {
+                    ctx.moveTo(pathPoints[i].x, pathPoints[i].y);
+                } else {
+                    ctx.lineTo(pathPoints[i].x, pathPoints[i].y);
+                }
+            }
+            ctx.strokeStyle = 'red'; // Trace color
+            ctx.stroke();
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPath();
+            drawTrace();
+            drawCircle(circleX, pathY - radius, radius);
+
+            // Calculate the position of the point on the circumference
+            const pointX = circleX + radius * Math.cos(angle);
+            const pointY = (pathY - radius) + radius * Math.sin(angle);
+            pathPoints.push({ x: pointX, y: pointY });
+
+            // Draw the point on the circumference
+            ctx.beginPath();
+            ctx.arc(pointX, pointY, 3, 0, Math.PI * 2);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+
+            // Update the circle position and angle
+            circleX += speed;
+            angle += speed / radius; // Increment angle to move clockwise
+
+            if (circleX - radius <= pathLength) {
+                requestAnimationFrame(animate);
+            }
+        }
+
+        // Delay animation start by 3 seconds
+        setTimeout(() => {
+            animate();
+        }, 3000); // 3000 milliseconds = 3 seconds
+
+        // Initial drawing to show the circle before animation starts
+        drawPath();
+        drawCircle(circleX, pathY - radius, radius);
+    </script>
+</body>
+</html>
