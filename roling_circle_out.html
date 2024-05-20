@@ -9,7 +9,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* Adjusted to place controls at the top */
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
@@ -18,31 +18,34 @@
             background-color: #ffffff;
         }
         #controls {
-            margin-bottom: 20px;
+            margin: 20px 0; /* Adjusted for better spacing */
         }
     </style>
 </head>
 <body>
     <div id="controls">
-        <label for="fixedRadius">Fixed Circle Radius: </label>
+        <label for="fixedRadius">中心円の半径: </label>
         <input type="number" id="fixedRadius" value="72">
-        <label for="rollingRadius">Rolling Circle Radius: </label>
+        <label for="rollingRadius">外接円の半径: </label>
         <input type="number" id="rollingRadius" value="36">
         <button id="startButton">Start</button>
+        <button id="stopButton">Stop</button>
     </div>
     <canvas id="canvas" width="800" height="800"></canvas>
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
 
         let R = 72; // Radius of the fixed circle
         let r = 36; // Radius of the rolling circle
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
-        let angle = 0; // Initial angle for rolling circle
+        let angle = -Math.PI / 2; // Initial angle to start at the top
         const speed = 0.05; // Speed of the rolling circle
         const pathPoints = []; // Array to store path points
+        let animationId; // To store the requestAnimationFrame ID
 
         function drawCircle(x, y, r, color = 'black') {
             ctx.beginPath();
@@ -90,25 +93,27 @@
             // Update the angle for the rolling circle
             angle += speed;
 
-            requestAnimationFrame(animate);
+            animationId = requestAnimationFrame(animate);
         }
 
         startButton.addEventListener('click', () => {
             R = parseFloat(document.getElementById('fixedRadius').value);
             r = parseFloat(document.getElementById('rollingRadius').value);
-            angle = 0;
+            angle = -Math.PI / 2; // Start at the top
             pathPoints.length = 0; // Clear previous path points
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before starting animation
             drawCircle(centerX, centerY, R);
-            drawCircle(centerX + R + r, centerY, r);
-            setTimeout(() => {
-                animate();
-            }, 3000); // 3000 milliseconds = 3 seconds
+            drawCircle(centerX + (R + r) * Math.cos(angle), centerY + (R + r) * Math.sin(angle), r);
+            animate();
+        });
+
+        stopButton.addEventListener('click', () => {
+            cancelAnimationFrame(animationId);
         });
 
         // Initial drawing to show the controls before animation starts
         drawCircle(centerX, centerY, R);
-        drawCircle(centerX + R + r, centerY, r);
+        drawCircle(centerX + (R + r) * Math.cos(angle), centerY + (R + r) * Math.sin(angle), r);
     </script>
 </body>
 </html>
