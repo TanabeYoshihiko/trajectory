@@ -9,7 +9,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Adjusted to place controls at the top */
+            justify-content: flex-start;
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
@@ -18,15 +18,15 @@
             background-color: #ffffff;
         }
         #controls {
-            margin: 20px 0; /* Adjusted for better spacing */
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
     <div id="controls">
-        <label for="fixedRadius">Fixed Circle Radius: </label>
+        <label for="fixedRadius">中心円の半径: </label>
         <input type="number" id="fixedRadius" value="72">
-        <label for="rollingRadius">Rolling Circle Radius: </label>
+        <label for="rollingRadius">内接円の半径: </label>
         <input type="number" id="rollingRadius" value="36">
         <button id="startButton">Start</button>
         <button id="stopButton">Stop</button>
@@ -72,14 +72,14 @@
             drawCircle(centerX, centerY, R); // Draw the fixed circle
 
             // Position of the rolling circle's center
-            const rollingCenterX = centerX + (R - r) * Math.cos(angle);
-            const rollingCenterY = centerY + (R - r) * Math.sin(angle);
+            const rollingCenterX = centerX + (R - r) * Math.cos(angle - Math.PI / 2);
+            const rollingCenterY = centerY + (R - r) * Math.sin(angle - Math.PI / 2);
 
             drawCircle(rollingCenterX, rollingCenterY, r); // Draw the rolling circle
 
             // Position of the point on the circumference of the rolling circle
-            const pointX = rollingCenterX + r * Math.cos(-angle * (R - r) / r);
-            const pointY = rollingCenterY + r * Math.sin(-angle * (R - r) / r);
+            const pointX = rollingCenterX + r * Math.cos(-(R - r) * angle / r - Math.PI/2);
+            const pointY = rollingCenterY + r * Math.sin(-(R - r) * angle / r - Math.PI/2);
             pathPoints.push({ x: pointX, y: pointY });
 
             drawTrace(); // Draw the trace
@@ -103,7 +103,7 @@
             pathPoints.length = 0; // Clear previous path points
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before starting animation
             drawCircle(centerX, centerY, R);
-            drawCircle(centerX + (R - r) * Math.cos(angle), centerY + (R - r) * Math.sin(angle), r);
+            drawCircle(centerX + (R - r) * Math.cos(-Math.PI / 2), centerY + (R - r) * Math.sin(-Math.PI / 2), r);
             animate();
         });
 
@@ -113,7 +113,7 @@
 
         // Initial drawing to show the controls before animation starts
         drawCircle(centerX, centerY, R);
-        drawCircle(centerX + (R - r) * Math.cos(angle), centerY + (R - r) * Math.sin(angle), r);
+        drawCircle(centerX + (R - r) * Math.cos(-Math.PI / 2), centerY + (R - r) * Math.sin(-Math.PI / 2), r);
     </script>
 </body>
 </html>
